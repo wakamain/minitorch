@@ -4,3 +4,10 @@ import numpy as np
 
 # typing for better type annotation
 from typing import Union, Sequence, Tuple
+
+# Scalar Class (An object that contains a value e.g an int or float)
+class Scalar:
+  def __init__(self, value):
+    self.value = value
+
+A = Scalar(1)
