@@ -17,6 +17,7 @@ class Scalar:
   
   # Addition
   def __add__(self, other):
+    other = other if isinstance(other, Scalar) else Scalar(other)
     return Scalar(self.value + other.value)
   
   # Negation
@@ -44,13 +45,13 @@ class Scalar:
   
 A = Scalar(1)
 B = Scalar(2)
-C = A + B
-D = A - B
-E = A * B
-F = A / B
-print(f"{A} + {B} = {C}")
-print(f"{A} - {B} = {D}")
-print(f"{A} * {B} = {E}")
-print(f"{A} / {B} = {F}")
-print(f"-A = {-A}")
-print(f"B**4 = {B**4}")
+C = A + 5
+D = B - 9.0
+E = A * 74
+F = B / 9*5
+G = B / (9*5)
+print(C)
+print(D)
+print(E)
+print(F)
+print(G)
