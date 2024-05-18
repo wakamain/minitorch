@@ -10,4 +10,8 @@ class Scalar:
   def __init__(self, value):
     self.value = value
 
-A = Scalar(1)
+  def __repr__(self):
+    return f"{self.value}"
+
+A = Scalar(1.0)
+print(A)
