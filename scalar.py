@@ -15,10 +15,42 @@ class Scalar:
   def __repr__(self):
     return f"{self.value}"
   
+  # Addition
   def __add__(self, other):
     return Scalar(self.value + other.value)
+  
+  # Negation
+  def __neg__(self):
+    return self * -1
+  
+  # Subtraction
+  def __sub__(self, other):
+    return self + (-other)
+  
+  # Multiplication
+  def __mul__(self, other):
+    other = other if isinstance(other, Scalar) else Scalar(other)
+    return Scalar(self.value * other.value)
+  
+  # Exponentiation
+  def __pow__(self, other):
+    if isinstance(other, Scalar):
+      other = other.value
+    return Scalar(self.value**other)
+    
+  # Divsion
+  def __truediv__(self, other):
+    return self * other**-1
   
 A = Scalar(1)
 B = Scalar(2)
 C = A + B
-print(C)
+D = A - B
+E = A * B
+F = A / B
+print(f"{A} + {B} = {C}")
+print(f"{A} - {B} = {D}")
+print(f"{A} * {B} = {E}")
+print(f"{A} / {B} = {F}")
+print(f"-A = {-A}")
+print(f"B**4 = {B**4}")
