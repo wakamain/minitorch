@@ -8,8 +8,10 @@ from typing import Union, Sequence, Tuple
 # Scalar Class (An object that contains a singular value e.g an int or float)
 # A scalar is a single number that represents a quantity, having magnitude but no direction.
 class Scalar:
-  def __init__(self, value):
+  def __init__(self, value, children=(), op=''):
     self.value = value
+    self.children = set(children)
+    self.op = op
 
   # https://docs.python.org/3/library/functions.html#repr
   def __repr__(self):
@@ -18,7 +20,7 @@ class Scalar:
   # Addition
   def __add__(self, other):
     other = other if isinstance(other, Scalar) else Scalar(other)
-    return Scalar(self.value + other.value)
+    return Scalar(self.value + other.value, children=(self, other), op='+')
   
   # Negation
   def __neg__(self):
@@ -31,7 +33,7 @@ class Scalar:
   # Multiplication
   def __mul__(self, other):
     other = other if isinstance(other, Scalar) else Scalar(other)
-    return Scalar(self.value * other.value)
+    return Scalar(self.value * other.value, children=(self, other), op='*')
   
   # Exponentiation
   def __pow__(self, other):
@@ -58,13 +60,11 @@ class Scalar:
   
 A = Scalar(1)
 B = Scalar(2)
-C = 5 + A
-D = 9.0 - B
-E = 74 * A
-F = 9*5 / B
-G = (9*5) / B
-print(C)
-print(D)
-print(E)
-print(F)
-print(G)
+C = A + B
+D = B * A
+E = A - A
+F = B / A
+print(C.children, C.op)
+print(D.children, D.op)
+print(E.children, E.op)
+print(F.children, F.op)
