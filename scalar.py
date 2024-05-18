@@ -42,13 +42,26 @@ class Scalar:
   # Multiplication
   def __mul__(self, other):
     other = other if isinstance(other, Scalar) else Scalar(other)
-    return Scalar(self.value * other.value, children=(self, other), op='*')
+    output = Scalar(self.value * other.value, children=(self, other), op='*')
+
+    def _backward():
+      self.grad += other.value * output.grad
+      other.grad += self.value * output.grad
+
+    output._backward = _backward
+    return output
   
   # Exponentiation
   def __pow__(self, other):
-    if isinstance(other, Scalar):
-      other = other.value
-    return Scalar(self.value**other)
+    other = other if isinstance(other, Scalar) else Scalar(other)
+    output = Scalar(self.value**other)
+
+    def _backward():
+      self.grad += (other * self.value**(other-1)) * output.grad
+      other.grad += output * math.log(self.value)
+    output._backward = _backward
+
+    return output
     
   # Divsion
   def __truediv__(self, other):
@@ -84,10 +97,10 @@ class Scalar:
   
 A = Scalar(1)
 B = Scalar(2)
-C = A + B
+C = A * B
 print(f"A = {A}")
 print(f"B = {B}")
-print(f"A + B = {C}")
+print(f"A * B = {C}")
 print("\n")
 print(f"Gradient of A before calling .backward() = {A.grad}")
 print(f"Gradient of B before calling .backward() = {B.grad}")
@@ -95,6 +108,19 @@ print("\n")
 C.backward()
 print(f"Gradient of A after calling .backward() = {A.grad}")
 print(f"Gradient of B after calling .backward() = {B.grad}")
-# I think the gradients should be 1 when adding since
-# this indicates a proportional relationship between
-# the input parameters A/B and the output C but am not sure
+
+print("------------------------------------------------------")
+
+D = Scalar(3)
+E = Scalar(4)
+F = D**E
+print(f"D = {D}")
+print(f"E = {E}")
+print(f"D**E = {F}")
+print("\n")
+print(f"Gradient of D before calling .backward() = {D.grad}")
+print(f"Gradient of E before calling .backward() = {E.grad}")
+print("\n")
+F.backward()
+print(f"Gradient of D after calling .backward() = {D.grad}")
+print(f"Gradient of E after calling .backward() = {E.grad}")
