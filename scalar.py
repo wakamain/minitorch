@@ -42,14 +42,27 @@ class Scalar:
   # Divsion
   def __truediv__(self, other):
     return self * other**-1
+
+  # Right hand operations (5 ◯ A)
+  def __radd__(self, other):
+    return self + other
+  
+  def __rsub__(self, other):
+    return other + (-self)
+  
+  def __rmul__(self, other):
+    return self * other
+  
+  def __rtruediv__(self, other):
+    return other * self**-1
   
 A = Scalar(1)
 B = Scalar(2)
-C = A + 5
-D = B - 9.0
-E = A * 74
-F = B / 9*5
-G = B / (9*5)
+C = 5 + A
+D = 9.0 - B
+E = 74 * A
+F = 9*5 / B
+G = (9*5) / B
 print(C)
 print(D)
 print(E)
