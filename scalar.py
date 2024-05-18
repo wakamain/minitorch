@@ -10,6 +10,8 @@ from typing import Union, Sequence, Tuple
 class Scalar:
   def __init__(self, value, children=(), op=''):
     self.value = value
+    self.grad = 0.0
+    self._backward = lambda:None
     self.children = set(children)
     self.op = op
 
@@ -20,7 +22,14 @@ class Scalar:
   # Addition
   def __add__(self, other):
     other = other if isinstance(other, Scalar) else Scalar(other)
-    return Scalar(self.value + other.value, children=(self, other), op='+')
+    output = Scalar(self.value + other.value, children=(self, other), op='+')
+
+    def _backward():
+      self.grad += output.grad
+      other.grad += output.grad
+
+    output._backward = _backward
+    return output
   
   # Negation
   def __neg__(self):
@@ -58,13 +67,34 @@ class Scalar:
   def __rtruediv__(self, other):
     return other * self**-1
   
+  def backward(self):
+    topo = []
+    visited = set()
+    def build_topo(v):
+      if v not in visited:
+        visited.add(v)
+        for child in v.children:
+          build_topo(child)
+        topo.append(v)
+    build_topo(self)
+
+    self.grad = 1.0
+    for node in reversed(topo):
+      node._backward()
+  
 A = Scalar(1)
 B = Scalar(2)
 C = A + B
-D = B * A
-E = A - A
-F = B / A
-print(C.children, C.op)
-print(D.children, D.op)
-print(E.children, E.op)
-print(F.children, F.op)
+print(f"A = {A}")
+print(f"B = {B}")
+print(f"A + B = {C}")
+print("\n")
+print(f"Gradient of A before calling .backward() = {A.grad}")
+print(f"Gradient of B before calling .backward() = {B.grad}")
+print("\n")
+C.backward()
+print(f"Gradient of A after calling .backward() = {A.grad}")
+print(f"Gradient of B after calling .backward() = {B.grad}")
+# I think the gradients should be 1 when adding since
+# this indicates a proportional relationship between
+# the input parameters A/B and the output C but am not sure
