@@ -54,10 +54,10 @@ class Scalar:
   # Exponentiation
   def __pow__(self, other):
     other = other if isinstance(other, Scalar) else Scalar(other)
-    output = Scalar(self.value**other)
+    output = Scalar(self.value**other.value)
 
     def _backward():
-      self.grad += (other * self.value**(other-1)) * output.grad
+      self.grad += (other * self.value**(other-1).value) * output.grad
       other.grad += output * math.log(self.value)
     output._backward = _backward
 
